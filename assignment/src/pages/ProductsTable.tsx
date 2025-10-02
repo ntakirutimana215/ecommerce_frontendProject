@@ -10,7 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   Upload,
-  Image as ImageIcon
+  // Image as ImageIcon
 } from "lucide-react";
 import { dashboardService, type Product } from "../services/dashboardService";
 

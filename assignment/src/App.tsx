@@ -11,20 +11,19 @@ import BlogPages from "./components/BlogsPage";
 import SingleBlogPage from "./components/singlePage";
 import CartPage from "./EndpointsPages/CartPage";
 
-import Dashboard from "./pages/Dashboard";
-import DLayout from "./Layout/dashBoardLayout";
+import DashboardLayout from "./DashboardComponents/DashboardLayout"; // ✅ new layout
+import DashboardHome from "./pages/Dashboard";      // ✅ new home page
 import Customers from "./pages/Customers";
 import Products from "./pages/ProductsTable";
-import OrdersPage from "./pages/Orders";
+import Orders from "./pages/Orders";
+
 import LoginForm from "./components/loginPage";
-import ForgotPassword from "./components/ForgetPassword"
+import ForgotPassword from "./components/ForgetPassword";
 import AuthPage from "./components/AuthoPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // ✅ Import the CartProvider
 import { CartProvider } from "./context/CartContext";
-
-// import Project from "./components/project";
 
 const App = () => {
   return (
@@ -42,29 +41,38 @@ const App = () => {
             <Route path="/blog/:id" element={<SingleBlogPage />} />
             <Route path="get-in-touch" element={<Contact />} />
             <Route path="CartPage" element={<CartPage />} />
-            <Route path="/ForgotPassword" element={<ForgotPassword/>}/>
-            <Route path="*" element={<div className="text-center mt-20"><h1 className="text-2xl">Page Not Found</h1><p>Go back to <a href="/" className="text-blue-500">home</a></p></div>} />
-            {/* <Route path="Project" element={<Project />} /> */}
+            <Route path="/ForgotPassword" element={<ForgotPassword />} />
+            <Route
+              path="*"
+              element={
+                <div className="text-center mt-20">
+                  <h1 className="text-2xl">Page Not Found</h1>
+                  <p>
+                    Go back to <a href="/" className="text-blue-500">home</a>
+                  </p>
+                </div>
+              }
+            />
           </Route>
 
           {/* Dashboard layout - Protected for authenticated users */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute requiredRole="admin">
-              <DLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Dashboard />} />
-            <Route path="customers" element={<Customers />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardHome />} />
+            <Route path="orders" element={<Orders />} />
             <Route path="products" element={<Products />} />
-            <Route path="Orders" element={<OrdersPage />} />
+            <Route path="customers" element={<Customers />} />
           </Route>
 
           {/* Auth pages outside of main layout (no navbar/footer) */}
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/login" element={<LoginForm />} />
-          
-
-
           <Route path="/RegistrationForm" element={<RegisterModal />} />
         </Routes>
       </CartProvider>

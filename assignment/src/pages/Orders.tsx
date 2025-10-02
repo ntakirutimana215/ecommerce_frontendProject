@@ -58,13 +58,19 @@ export default function OrderPage() {
   });
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
+  const aValue = a[sortField];
+  const bValue = b[sortField];
+
+  // Handle null/undefined cases first
+  if (aValue == null && bValue == null) return 0;
+  if (aValue == null) return 1;
+  if (bValue == null) return -1;
+
+  if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+  if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+  return 0;
+});
+
 
   const handleSort = (field: keyof Order) => {
     if (sortField === field) {
@@ -100,13 +106,13 @@ export default function OrderPage() {
       setOrders(prev => prev.map(o => o._id === orderId ? updatedOrder : o));
       
       // Show success message
-      const statusColors = {
-        pending: "text-yellow-600 bg-yellow-100",
-        paid: "text-blue-600 bg-blue-100",
-        shipped: "text-purple-600 bg-purple-100",
-        delivered: "text-green-600 bg-green-100",
-        cancelled: "text-red-600 bg-red-100"
-      };
+      // const statusColors = {
+      //   pending: "text-yellow-600 bg-yellow-100",
+      //   paid: "text-blue-600 bg-blue-100",
+      //   shipped: "text-purple-600 bg-purple-100",
+      //   delivered: "text-green-600 bg-green-100",
+      //   cancelled: "text-red-600 bg-red-100"
+      // };
     } catch (error) {
       console.error("Failed to update order status:", error);
       alert("Failed to update order status");
