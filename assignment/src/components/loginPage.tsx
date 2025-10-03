@@ -5,6 +5,7 @@ import { Notify } from "notiflix";
 import { Eye, EyeOff } from "lucide-react";
 import { authService } from "../services/authService";
 import type { LoginData } from "../services/authService";
+import type { AxiosError } from "axios";
 
 interface FormData {
   email: string;
@@ -17,11 +18,16 @@ function LoginModal() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, reset } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>();
 
   useEffect(() => {
-    const isAdmin = searchParams.get('admin');
-    if (isAdmin === 'true') {
+    const isAdmin = searchParams.get("admin");
+    if (isAdmin === "true") {
       Notify.info("Admin registration successful! Please log in to access the dashboard.");
     }
   }, [searchParams]);
@@ -44,8 +50,18 @@ function LoginModal() {
       } else {
         navigate("/");
       }
-    } catch (error:any) {
-      Notify.failure(error.response?.data?.message || "Login failed. Please try again.");
+    } catch (error: unknown) {
+      let message = "Login failed. Please try again.";
+      const axiosError = error as AxiosError;
+      if (
+        axiosError?.response &&
+        typeof axiosError.response.data === "object" &&
+        axiosError.response.data !== null &&
+        "message" in axiosError.response.data
+      ) {
+        message = (axiosError.response.data as { message: string }).message;
+      }
+      Notify.failure(message);
     }
   };
 
@@ -57,7 +73,6 @@ function LoginModal() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white p-8 rounded-lg shadow-md relative">
-
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">LOGIN</h2>
             <p className="text-sm text-gray-600 mb-8">
@@ -73,6 +88,7 @@ function LoginModal() {
                 className="w-full border border-gray-300 px-3 py-2 rounded-md outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
                 {...register("email", { required: "Email is required" })}
               />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
 
             <div className="relative">
@@ -90,6 +106,7 @@ function LoginModal() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
             </div>
 
             <div className="flex items-center justify-between text-sm">
@@ -97,10 +114,8 @@ function LoginModal() {
                 <input type="checkbox" className="accent-yellow-500" {...register("rememberMe")} />
                 <span className="text-gray-600">Remember me</span>
               </label>
-              <Link to ="/ForgotPassword">
-              <a className="text-yellow-600 hover:underline">
+              <Link to="/ForgotPassword" className="text-yellow-600 hover:underline">
                 Lost your password?
-              </a>
               </Link>
             </div>
 
